@@ -53,6 +53,7 @@ public class WatchServiceA {
                 Path p=Paths.get(dir,path.toString());
                 fileEvent.setRandomAccessFile(new RandomAccessFile(p.toString(),"r"));
                 pathFileEventMap.put(path.toString(),fileEvent);
+                fileEvent.rollbackPointer();
             }else if(event.kind()==StandardWatchEventKinds.ENTRY_DELETE){
                 //文件删除  删除文件句柄
                 fileEvent.setStandardWatchEventKinds(StandardWatchEventKinds.ENTRY_DELETE);
