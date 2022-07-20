@@ -10,6 +10,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
@@ -44,10 +45,13 @@ public class LogFactory {
         List<WatchServiceA> watchServiceAList=new ArrayList<>();
         for(Path p:pathList){
             dirs.add(p.getParent().toString());
-            FileEvent fileEvent=new FileEvent();
-            fileEvent.setFilePath(p);
-            fileEvent.setRandomAccessFile(new RandomAccessFile(p.toString(),"r"));
-            fileEventMap.put(p.getFileName().toString(),fileEvent);
+            File file=p.toFile();
+            if(file.isFile()){
+                FileEvent fileEvent=new FileEvent();
+                fileEvent.setFilePath(p);
+                fileEvent.setRandomAccessFile(new RandomAccessFile(p.toString(),"r"));
+                fileEventMap.put(p.getFileName().toString(),fileEvent);
+            }
         }
         for(String dir:dirs){
             WatchServiceA watchService=new WatchServiceA(threadPoolTaskExecutor,fileEventQueue,dir,fileEventMap);
