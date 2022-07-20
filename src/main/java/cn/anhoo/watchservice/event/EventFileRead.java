@@ -23,7 +23,7 @@ public class EventFileRead {
                 fileEvent.readComplete();
                 return stringBuffer.toString();
             }
-
+            fileEvent.rollbackPointer();
         }catch (EOFException e){
             fileEvent.rollbackPointer();
         }catch (IOException e){

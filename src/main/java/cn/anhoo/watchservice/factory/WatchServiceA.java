@@ -4,6 +4,7 @@ import cn.anhoo.watchservice.event.EventFileRead;
 import cn.anhoo.watchservice.event.FileEvent;
 import com.sun.nio.file.SensitivityWatchEventModifier;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.*;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import static com.sun.jmx.mbeanserver.Util.cast;
 
 @AllArgsConstructor
+@Slf4j
 public class WatchServiceA {
     final ThreadPoolTaskExecutor threadPoolTaskExecutor;
     final Queue<FileEvent> fileEventQueue;
@@ -44,7 +46,6 @@ public class WatchServiceA {
         FileEvent fileEvent=pathFileEventMap.get(path.toString());
         if(fileEvent!=null && event.kind()==StandardWatchEventKinds.ENTRY_MODIFY){
             fileEvent.setStandardWatchEventKinds(StandardWatchEventKinds.ENTRY_MODIFY);
-            fileEvent.setStandardWatchEventKinds(null);
             return fileEvent;
         }
 
@@ -55,15 +56,19 @@ public class WatchServiceA {
             if(fileEvent1.getRandomAccessFile()!=null){
                 fileEvent1.getRandomAccessFile().close();
             }
+            log.warn("delete file {}",path);
             return null;
         }
         if(event.kind()==StandardWatchEventKinds.ENTRY_CREATE){
             //文件重新创建  重新打开句柄
-            fileEvent.setStandardWatchEventKinds(StandardWatchEventKinds.ENTRY_CREATE);
-            fileEvent.setRandomAccessFile(new RandomAccessFile(path.toString(),"r"));
-            fileEvent.setFilePath(path);
-            pathFileEventMap.put(path.getFileName().toString(),fileEvent);
-            fileEvent.rollbackPointer();
+            FileEvent fileEvent1=new FileEvent();
+            fileEvent1.setStandardWatchEventKinds(StandardWatchEventKinds.ENTRY_CREATE);
+            Path p=Paths.get(dir,path.toString());
+            fileEvent1.setRandomAccessFile(new RandomAccessFile(p.toString(),"r"));
+            fileEvent1.setFilePath(p);
+            pathFileEventMap.put(path.toString(),fileEvent1);
+            fileEvent1.rollbackPointer();
+            log.warn("create file {}",path);
             // 创建文件操作不读取文件  有可能数据暂时还未写入
         }
         return null;
@@ -89,7 +94,8 @@ public class WatchServiceA {
     public void start(){
         threadPoolTaskExecutor.submit(()->{
             try {
-                doMonitor(watchServiceFactory(dir));
+                WatchService watchService=watchServiceFactory(dir);
+                doMonitor(watchService);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);

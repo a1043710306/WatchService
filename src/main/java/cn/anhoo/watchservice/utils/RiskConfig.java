@@ -15,7 +15,6 @@ import java.util.List;
 public class RiskConfig {
     private List<String> logFiles;
 
-
     public List<Path> getLogFilesPaths(){
         List<Path> pathsList=new ArrayList<>();
         for(String s:getLogFiles()){
