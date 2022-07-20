@@ -3,6 +3,8 @@ package cn.anhoo.watchservice.event;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EventFileRead {
     public  static String readLine(FileEvent fileEvent)  {
@@ -28,5 +30,14 @@ public class EventFileRead {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static List<String> getLoadLogs(FileEvent fileEvent){
+        List<String> logs=new ArrayList<>();
+        String s=null;
+        while ((s=readLine(fileEvent))!=null){
+            logs.add(s);
+        }
+        return logs;
     }
 }

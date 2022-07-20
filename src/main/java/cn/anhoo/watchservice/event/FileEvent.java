@@ -18,7 +18,7 @@ public class FileEvent {
     //事件状态
     private WatchEvent.Kind<Path> standardWatchEventKinds;
 
-    private String filePath;
+    private Path filePath;
 
 
     public RandomAccessFile getRandomAccessFile() {
@@ -57,11 +57,11 @@ public class FileEvent {
         this.standardWatchEventKinds = standardWatchEventKinds;
     }
 
-    public String getFilePath() {
+    public Path getFilePath() {
         return filePath;
     }
 
-    public void setFilePath(String filePath) {
+    public void setFilePath(Path filePath) {
         this.filePath = filePath;
     }
 }
