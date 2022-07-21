@@ -10,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Configuration
 public class FileEventQueueConfig {
     @Bean
-    public Queue<FileEvent> fileEventQueue(){
+    public LinkedBlockingQueue<FileEvent> fileEventQueue(){
         return new LinkedBlockingQueue<>();
     }
 }
