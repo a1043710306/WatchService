@@ -60,16 +60,20 @@ public class WatchServiceA {
             return null;
         }
         if(event.kind()==StandardWatchEventKinds.ENTRY_CREATE){
-            //文件重新创建  重新打开句柄
-            FileEvent fileEvent1=new FileEvent();
-            fileEvent1.setStandardWatchEventKinds(StandardWatchEventKinds.ENTRY_CREATE);
-            Path p=Paths.get(dir,path.toString());
-            fileEvent1.setRandomAccessFile(new RandomAccessFile(p.toString(),"r"));
-            fileEvent1.setFilePath(p);
-            pathFileEventMap.put(path.toString(),fileEvent1);
-            fileEvent1.rollbackPointer();
-            log.warn("create file {}",path);
-            // 创建文件操作不读取文件  有可能数据暂时还未写入
+         try{
+                //文件重新创建  重新打开句柄
+                FileEvent fileEvent1=new FileEvent();
+                fileEvent1.setStandardWatchEventKinds(StandardWatchEventKinds.ENTRY_CREATE);
+                Path p=Paths.get(dir,path.toString());
+                fileEvent1.setRandomAccessFile(new RandomAccessFile(p.toString(),"r"));
+                fileEvent1.setFilePath(p);
+                pathFileEventMap.put(path.toString(),fileEvent1);
+                fileEvent1.rollbackPointer();
+                log.warn("create file {}",path);
+                // 创建文件操作不读取文件  有可能数据暂时还未写入
+            }catch(Exception  e){
+             log.warn("未知文件打开失败 {}",e.toString());
+            }
         }
         return null;
     }

@@ -39,6 +39,7 @@ public class LogService {
             List<String> logs=EventFileRead.getLoadLogs(fileEvent);
             selectMapperHandle.doDb(logs,fileEvent);
         }
+        fileEvents.clear();
     }
 
 
